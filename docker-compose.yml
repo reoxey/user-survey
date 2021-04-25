@@ -1,0 +1,26 @@
+version: "3"
+services:
+  db:
+    image: mongo
+    expose:
+      - 27017
+    restart: unless-stopped
+
+  survey:
+    build:
+      context: ./survey
+    expose:
+      - 8000
+    environment:
+      DB_DSN: "mongodb://db:27017"
+      DB_NAME: "survey"
+    links:
+      - db
+
+  client:
+    build:
+      context: ./client
+    environment:
+      BASE_URL: "http://survey:8000/api"
+    links:
+      - survey
